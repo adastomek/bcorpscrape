@@ -1,0 +1,444 @@
+import requests
+import csv
+import re
+from bs4 import BeautifulSoup
+import html.parser
+import lxml
+import xml
+import html5lib
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import time
+
+writera = csv.writer(open('data.csv','a', encoding="utf-8", newline=""))
+
+opts = Options()
+opts.add_argument(" --headless")
+opts.binary_location= "C:\Program Files\Google\Chrome\Application\chrome.exe"
+chrome_driver = "C:\Documents\Visual Studio projects\Learning C\PythonApplication1\PythonApplication1\chromedriver.exe"
+driver = webdriver.Chrome(options=opts, executable_path=chrome_driver)
+
+i = 72
+while i <= 73:
+    i = i + 1
+    if (i == 1):
+        Linkdirectory = 'https://www.bcorporation.net/en-us/find-a-b-corp/search/?refinement=countries%3DUnited%20Kingdom'
+    else:
+        Linkdirectory = 'https://www.bcorporation.net/en-us/find-a-b-corp/search?' + 'page=' + str(i) + '&refinement=countries%3DUnited Kingdom'
+
+    driver.get(Linkdirectory)
+
+    time.sleep(5)
+
+    page = driver.page_source
+    soup = BeautifulSoup(page, 'html5lib')
+ 
+    Company_list = soup.find('ul', class_='ais-Hits-list')
+    Company = Company_list.findAll('li', class_='ais-Hits-item')
+
+    for Link in Company:
+        Link = 'https://www.bcorporation.net' + Link.next_element.get('href')
+
+        page = requests.get(Link)
+        soup = BeautifulSoup(page.text, 'html5lib')
+
+        time.sleep(1)
+
+
+        CompanyName = soup.find('div', class_='col-start-5 col-end-12 py-4')
+        if (CompanyName != None):
+            CompanyName = CompanyName.h1.get_text()
+
+        print(CompanyName)
+
+        CompanyDescription = soup.find('div', class_='col-start-5 col-end-12 py-4').p.get_text()
+        print(CompanyDescription)
+
+        Infobar = soup.find('div', class_='hidden lg:flex flex-col bg-gray-light col-start-2 col-end-5 p-4 space-y-4 break-words').children
+
+        for Infobar_header in Infobar:
+            Infobar_header = Infobar_header.span
+            Infobar_header_text = Infobar_header.get_text()
+            if (Infobar_header_text == ('Headquarters')):
+                Headquaters = Infobar_header.next_sibling.p.get_text()
+            if (Infobar_header_text == ('Certified Since')):
+                Certified_Since = Infobar_header.next_sibling.p.get_text()
+            if (Infobar_header_text == ('Sector')):
+                Sector = Infobar_header.next_sibling.p.get_text()
+            if (Infobar_header_text == ('Countries of Operations')):
+                Countries_of_Operations = Infobar_header.next_sibling.p.get_text()
+            if (Infobar_header_text == ('Website')):
+                Website = Infobar_header.next_sibling.a.get('href')
+
+        print(Headquaters)
+        print(Certified_Since)
+        print(Sector)
+        print(Countries_of_Operations)
+        print(Website)
+
+
+        Document = ''
+        Additional_Docs_a = soup.find('div', class_='max-h-full grid grid-flow-row grid-cols-6 lg:grid-cols-12 gap-8 hidden lg:grid col-span-full p-8')
+        if (Additional_Docs_a != None):
+            Additional_Docs_Location = Additional_Docs_a.div.div.h3
+            if (Additional_Docs_Location.get_text() == 'Additional Documentation'):
+                Additional_Docs = Additional_Docs_Location.parent.find_all('div', recursive=False)
+                for Document in Additional_Docs:
+                    Document = Document
+                    if (Document != None):
+                        Document = Document.get_text()
+
+        print(Document)
+
+
+
+        OIS = soup.find('text', class_="text-4xl").get_text()
+        print(OIS)
+
+
+
+
+
+        scores = soup.find('div', class_="grid grid-cols-6 lg:grid-cols-12 gap-8 lg:hidden w-full").find_all('div', class_='col-span-full flex flex-col w-full')
+
+        Governance = 0
+
+        Mission_Engagemenmt = 0
+        Ethics_Transparency = 0
+        S_Mission_Lock = 0
+
+        Workers = 0
+        
+        Financial_Sec = 0
+        Health_Wellness = 0
+        Career_dev = 0
+        Engagement_Sat = 0
+        S_Worker_Owned = 0
+        S_Workforce_Dev =0
+
+        Community = 0
+
+        Diversity = 0
+        Economic_Impact = 0
+        Civic_Engagement =0
+        Supply_Chain = 0
+        S_Supply_Chain = 0
+        S_Microenterprise = 0
+        S_Local_Dev = 0
+        S_National_Dev = 0
+        S_Prod_Coop = 0
+        S_Designed_Give = 0
+
+        Environment = 0
+
+        Env_Man = 0
+        Air_Climate = 0
+        Water = 0
+        Land_Life = 0
+        S_Renewable_En = 0
+        S_Resource_Cons = 0
+        S_Land_Cons = 0
+        S_Toxin_Red =0
+        S_Resource_Cons = 0
+        S_Env_Edu = 0
+        S_Env_Innovation = 0
+        S_Training_Collab = 0
+        S_Community = 0
+        S_Certification = 0
+        S_Materials_Codes = 0
+        S_Green_Lending = 0
+
+        Customers = 0
+
+        Customer_Stew = 0
+        S_Basic_Serv = 0
+        S_Edu = 0
+        S_Arts = 0
+        S_Economic_Emp = 0
+        S_Health_Well = 0
+        S_Purpose = 0
+        S_Impact_Imp = 0
+        S_Serving_Need = 0
+        S_Infrastructure = 0
+        S_Portfolio_Reporting = 0
+        S_Targeted_Investment = 0
+        S_Leadership_Outreach = 0
+        S_Investment_Criteria = 0
+        S_Portfolio_Management = 0
+        S_Past_Performance = 0
+        S_Current_Fund = 0
+        S_Positive_Impact = 0
+        S_Capacity_Building = 0
+        S_Fund_Governance = 0
+        S_Business_Model_Engagement = 0
+        S_Quality_Continuous_Imp = 0
+        S_Edu_Outcomes = 0
+        S_Privacy_Consumer_Protection = 0
+
+        S_remainderCom = ''
+        S_remainderCus = ''
+        S_remainderEnv = ''
+        S_remainderGov = ''
+        S_remainderWor = ''
+
+        remainderGov = ''
+        remainderCus = ''
+        remainderEnv = ''
+        remainderCom = ''
+        remainderWor = ''
+
+
+        for impact_areas in scores:
+            impact_areas = impact_areas.find('h3')
+            impact_area_text = impact_areas.get_text()
+            if (impact_area_text.__contains__('Governance')):
+                Governance = impact_area_text.split(' ', 1)[1]
+                print(Governance)
+                x = impact_areas.parent.find('div', class_='flex flex-col space-y-2')
+                if (x != None):
+                    x1 = x.find_all('div', class_='flex px-4')
+                    if (x1 != None):
+                        for p in x1:
+                            p = p
+                            if (p != None):
+                                subscoreGov = p.span.get_text() 
+                                subscoreGov_value = p.span.next_sibling.get_text()
+                                if (subscoreGov == ('Mission & Engagement')):
+                                    Mission_Engagemenmt = subscoreGov_value
+                                elif (subscoreGov == ('Ethics & Transparency')):
+                                    Ethics_Transparency = subscoreGov_value
+                                else:
+                                    remainderGov = remainderGov + ',' + subscoreGov + subscoreGov_value
+
+                y = impact_areas.parent.find('div', class_='flex flex-col space-y-2').find('div', class_='bg-blue-light rounded-3xl py-4 px-4 space-y-2')
+                if (y != None):
+                    y1 = y.find_all('div')
+                    if (y1 != None):
+                        for q in y1:
+                            q = q
+                            if (q != None):
+                                specialsubscoresGov = q.span.get_text()
+                                specialsubscoresGov_value = q.span.next_sibling.get_text()
+                                if (specialsubscoresGov == ('+ Mission Locked')):
+                                    S_Mission_Lock = specialsubscoresGov_value
+                                else:
+                                    S_remainderGov = S_remainderGov + ',' + specialsubscoresGov + specialsubscoresGov_value
+               
+            if (impact_area_text.__contains__('Workers')):
+                Workers = impact_area_text.split(' ', 1)[1]
+                print(Workers)
+                x = impact_areas.parent.find('div', class_='flex flex-col space-y-2')
+                if (x != None):
+                    x1 = x.find_all('div', class_='flex px-4')
+                    if (x1 != None):
+                        for p in x1:
+                            p = p
+                            if (p != None):
+                                subscoreWor = p.span.get_text() 
+                                subscoreWor_value = p.span.next_sibling.get_text()
+                                if (subscoreWor == ('Financial Security')):
+                                    Financial_Sec = subscoreWor_value
+                                elif (subscoreWor == ('Health, Wellness, & Safety')):
+                                    Health_Wellness = subscoreWor_value
+                                elif (subscoreWor == ('Career Development')):
+                                    Career_dev = subscoreWor_value
+                                elif (subscoreWor == ('Engagement & Satisfaction')):
+                                    Engagement_Sat = subscoreWor_value
+                                else:
+                                    remainderWor = remainderWor + ',' + subscoreWor + subscoreWor_value
+
+                y = impact_areas.parent.find('div', class_='flex flex-col space-y-2').find('div', class_='bg-blue-light rounded-3xl py-4 px-4 space-y-2')
+                if (y != None):
+                    y1 = y.find_all('div')
+                    if (y1 != None):
+                        for q in y1:
+                            q = q
+                            if (q != None):
+                                specialsubscoresWor = q.span.get_text()
+                                specialsubscoresWor_value = q.span.next_sibling.get_text()
+                                if (specialsubscoresWor == ('+ Worker Owned')):
+                                    S_Worker_Owned = specialsubscoresWor_value
+                                elif (specialsubscoresWor == ('+ Workforce Development')):
+                                    S_Workforce_Dev = specialsubscoresWor_value
+                                else:
+                                    S_remainderWor = S_remainderWor + ',' + specialsubscoresWor + specialsubscoresWor_value
+
+            if (impact_area_text.__contains__('Community')):
+                Community = impact_area_text.split(' ', 1)[1]
+                print(Community)
+                x = impact_areas.parent.find('div', class_='flex flex-col space-y-2')
+                if (x != None):
+                    x1 = x.find_all('div', class_='flex px-4')
+                    if (x1 != None):
+                        for p in x1:
+                            p = p
+                            if (p != None):
+                                subscoreCom = p.span.get_text() 
+                                subscoreCom_value = p.span.next_sibling.get_text()
+                                if (subscoreCom == ('Diversity, Equity, & Inclusion')):
+                                    Diversity = subscoreCom_value
+                                elif (subscoreCom == ('Economic Impact')):
+                                    Economic_Impact = subscoreCom_value
+                                elif (subscoreCom == ('Civic Engagement & Giving')):
+                                    Civic_Engagement = subscoreCom_value                                
+                                elif (subscoreCom == ('Supply Chain Management')):
+                                    Supply_Chain = subscoreCom_value
+                                else:
+                                    remainderCom = remainderCom + ',' + subscoreCom + subscoreCom_value
+
+                y = impact_areas.parent.find('div', class_='flex flex-col space-y-2').find('div', class_='bg-blue-light rounded-3xl py-4 px-4 space-y-2')
+                if (y != None):
+                    y1 = y.find_all('div')
+                    if (y1 != None):
+                        for q in y1:
+                            q = q
+                            if (q != None):
+                                specialsubscoresCom = q.span.get_text()
+                                specialsubscoresCom_value = q.span.next_sibling.get_text()
+                                if (specialsubscoresCom == ('+ Supply Chain Poverty Alleviation')):
+                                    S_Supply_Chain = specialsubscoresCom_value
+                                elif (specialsubscoresCom == ('+ Micro-Enterprise Poverty Alleviation')):
+                                    S_Microenterprise = specialsubscoresCom_value
+                                elif (specialsubscoresCom == ('+ Local Economic Development')):
+                                    S_Local_Dev = specialsubscoresCom_value
+                                elif (specialsubscoresCom == ('+ National Economic Development')):
+                                    S_National_Dev = specialsubscoresCom_value
+                                elif (specialsubscoresCom == ('+ Producer Cooperative')):
+                                    S_Prod_Coop = specialsubscoresCom_value
+                                elif (specialsubscoresCom == ('+ Designed to Give')):
+                                    S_Designed_Give = specialsubscoresCom_value
+                                else:
+                                    S_remainderCom = S_remainderCom + ',' + specialsubscoresCom + specialsubscoresCom_value
+
+            if (impact_area_text.__contains__('Environment')):
+                Environment = impact_area_text.split(' ', 1)[1]
+                print(Environment)
+                x = impact_areas.parent.find('div', class_='flex flex-col space-y-2')
+                if (x != None):
+                    x1 = x.find_all('div', class_='flex px-4')
+                    if (x1 != None):
+                        for p in x1:
+                            p = p
+                            if (p != None):
+                                subscoreEnv = p.span.get_text() 
+                                subscoreEnv_value = p.span.next_sibling.get_text()
+                                if (subscoreEnv == ('Environmental Management')):
+                                    Env_Man = subscoreEnv_value
+                                elif (subscoreEnv == ('Air & Climate')):
+                                    Air_Climate = subscoreEnv_value
+                                elif (subscoreEnv == ('Water')):
+                                    Water = subscoreEnv_value                                
+                                elif (subscoreEnv == ('Land & Life')):
+                                    Land_Life = subscoreEnv_value
+                                else:
+                                    remainderEnv = remainderEnv + ',' + subscoreEnv + subscoreEnv_value
+                y = impact_areas.parent.find('div', class_='flex flex-col space-y-2').find('div', class_='bg-blue-light rounded-3xl py-4 px-4 space-y-2')
+                if (y != None):
+                    y1 = y.find_all('div')
+                    if (y1 != None):
+                        for q in y1:
+                            q = q
+                            if (q != None):
+                                specialsubscoresEnv = q.span.get_text()
+                                specialsubscoresEnv_value = q.span.next_sibling.get_text()
+                                if (specialsubscoresEnv == ('+ Renewable/Cleaner Burning Energy') or specialsubscoresEnv == ('+ Renewable or Cleaner-burning Energy')):
+                                    S_Renewable_En = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv == ('+ Resource Conservation')):
+                                    S_Resource_Cons = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv == ('+ Land/wildlife Conservation')):
+                                    S_Land_Cons = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv == ('+ Toxin Reduction / Remediation')):
+                                    S_Toxin_Red = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv.__contains__('Education') and specialsubscoresEnv.__contains__('Information')):
+                                    S_Env_Edu = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv.__contains__('Environmentally Innovative')):
+                                    S_Env_Innovation = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv == ('+ Training & Collaboration')):
+                                    S_Training_Collab = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv == ('+ Community')):
+                                    S_Community = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv == ('+ Certification')):
+                                    S_Certification = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv == ('+ Materials & Codes')):
+                                    S_Materials_Codes = specialsubscoresEnv_value
+                                elif (specialsubscoresEnv == ('+ Green Lending')):
+                                    S_Green_Lending = specialsubscoresEnv_value
+                                else:
+                                    S_remainderEnv = S_remainderEnv + ',' + specialsubscoresEnv + specialsubscoresEnv_value
+
+            if (impact_area_text.__contains__('Customers')):
+                Customers = impact_area_text.split(' ', 1)[1]
+                print(Customers)
+                x = impact_areas.parent.find('div', class_='flex flex-col space-y-2')
+                if (x != None):
+                    x1 = x.find_all('div', class_='flex px-4')
+                    if (x1 != None):
+                        for p in x1:
+                            p = p
+                            if (p != None):
+                                subscoreCus = p.span.get_text() 
+                                subscoreCus_value = p.span.next_sibling.get_text()
+                                if (subscoreCus == ('Customer Stewardship')):
+                                    Customer_Stew = subscoreCus_value
+                                else:
+                                    remainderCus = remainderCus + ',' + subscoreCus + subscoreCus_value
+                y = impact_areas.parent.find('div', class_='flex flex-col space-y-2').find('div', class_='bg-blue-light rounded-3xl py-4 px-4 space-y-2')
+                if (y != None):
+                    y1 = y.find_all('div')
+                    if (y1 != None):
+                        for q in y1:
+                            q = q
+                            if (q != None):
+                                specialsubscoresCus = q.span.get_text()
+                                specialsubscoresCus_value = q.span.next_sibling.get_text()
+                                if (specialsubscoresCus == ('+ Basic Services for the Underserved')):
+                                    S_Basic_Serv = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Economic Empowerment for the Underserved')):
+                                    S_Economic_Emp = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Health & Wellness Improvement')):
+                                    S_Health_Well = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Education')):
+                                    S_Edu = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Support for Underserved/Purpose Driven Enterprises')):
+                                    S_Purpose = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Impact Improvement')):
+                                    S_Impact_Imp = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Arts, Media, & Culture')):
+                                    S_Arts = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Infrastructure/ Market Access Building')):
+                                    S_Infrastructure = specialsubscoresCus_value
+                                elif (specialsubscoresCus.__contains__('in Need Populations')):
+                                    S_Serving_Need = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Portfolio Reporting')):
+                                    S_Portfolio_Reporting = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Targeted for Investment')):
+                                    S_Targeted_Investment = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Leadership & Outreach')):
+                                    S_Leadership_Outreach = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Investment Criteria')):
+                                    S_Investment_Criteria = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Portfolio Management')):
+                                    S_Portfolio_Management = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Past Performance')):
+                                    S_Past_Performance = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Current Fund')):
+                                    S_Current_Fund = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Positive Impact')):
+                                    S_Positive_Impact = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Capacity Building')):
+                                    S_Capacity_Building = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Fund Governance')):
+                                    S_Fund_Governance = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Business Model and Engagement')):
+                                    S_Business_Model_Engagement = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Quality and Continuous Improvement')):
+                                    S_Quality_Continuous_Imp = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Educational Outcomes')):
+                                    S_Edu_Outcomes = specialsubscoresCus_value
+                                elif (specialsubscoresCus == ('+ Privacy and Consumer Protection')):
+                                    S_Privacy_Consumer_Protection = specialsubscoresCus_value
+                                else:
+                                    S_remainderCus = S_remainderCus + ',' + specialsubscoresCus + specialsubscoresCus_value
+                
+        writera.writerow([CompanyName,Headquaters,Certified_Since,Sector,Countries_of_Operations,Website,Document,CompanyDescription,OIS,Governance,Mission_Engagemenmt,Ethics_Transparency,S_Mission_Lock,remainderGov,S_remainderGov,Workers,Financial_Sec,Health_Wellness,Career_dev,Engagement_Sat,S_Worker_Owned,S_Workforce_Dev,remainderWor,S_remainderWor,Community,Diversity,Economic_Impact,Civic_Engagement,Supply_Chain,S_Supply_Chain,S_Microenterprise,S_Local_Dev,S_National_Dev,S_Prod_Coop,S_Designed_Give,remainderCom,S_remainderCom,Environment,Env_Man,Air_Climate,Water,Land_Life,S_Renewable_En,S_Land_Cons,S_Toxin_Red,S_Resource_Cons,S_Env_Edu,S_Env_Innovation,S_Training_Collab,S_Community,S_Certification,S_Materials_Codes,S_Green_Lending,remainderEnv,S_remainderEnv,Customers,Customer_Stew,S_Basic_Serv,S_Edu,S_Arts,S_Economic_Emp,S_Health_Well,S_Purpose,S_Impact_Imp,S_Infrastructure,S_Serving_Need,S_Portfolio_Reporting,S_Targeted_Investment,S_Leadership_Outreach,S_Investment_Criteria,S_Portfolio_Management,S_Past_Performance,S_Current_Fund,S_Positive_Impact,S_Capacity_Building,S_Fund_Governance,S_Business_Model_Engagement,S_Quality_Continuous_Imp,S_Edu_Outcomes,S_Privacy_Consumer_Protection,remainderCus,S_remainderCus])
+        time.sleep(1)
