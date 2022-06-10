@@ -18,7 +18,7 @@ opts.binary_location= "C:\Program Files\Google\Chrome\Application\chrome.exe"
 chrome_driver = "C:\Documents\Visual Studio projects\Learning C\PythonApplication1\PythonApplication1\chromedriver.exe"
 driver = webdriver.Chrome(options=opts, executable_path=chrome_driver)
 
-i = 72
+i = 0
 while i <= 73:
     i = i + 1
     if (i == 1):
